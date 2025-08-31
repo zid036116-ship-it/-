@@ -1,0 +1,34 @@
+# sample_config.yaml
+# Edit the tickers and aliases as you like, then run:
+#   python fetch_market_data.py sample_config.yaml
+
+start: "2015-01-01"
+end: "2099-12-31"
+interval: "1d"
+out_dir: "./market_data"
+
+# Human-friendly names for nicer filenames
+aliases:
+  "^GSPC": "S&P500"
+  "^IXIC": "Nasdaq Composite"
+  "000001.SS": "SSE Composite 上证指数"
+  "399001.SZ": "SZSE Component 深证成指"
+  "510300.SS": "沪深300ETF_华泰柏瑞"
+  "^HSI": "Hang Seng 恒生"
+  "^HSTECH": "Hang Seng TECH 恒生科技"
+  "3033.HK": "恒生科技ETF_南方"
+  "XAUUSD=X": "Gold Spot XAUUSD"
+  "518880.SS": "华安黄金ETF_518880"
+
+# Choose your universe here
+tickers:
+  - "^GSPC"        # S&P 500 index
+  - "^IXIC"        # Nasdaq Composite
+  - "000001.SS"    # Shanghai Composite
+  - "399001.SZ"    # Shenzhen Component
+  - "510300.SS"    # CSI300 ETF proxy
+  - "^HSI"         # Hang Seng Index
+  - "^HSTECH"      # Hang Seng TECH Index
+  - "3033.HK"      # HK HSTECH ETF
+  - "XAUUSD=X"     # Spot gold
+  - "518880.SS"    # China gold ETF (华安)
