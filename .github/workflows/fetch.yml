@@ -1,0 +1,31 @@
+name: fetch-market-data
+
+on:
+  schedule:
+    # GitHub Actions 用 UTC 时区；这两条等价于 SGT 的 04:20 和 15:20
+    - cron: "20 20 * * *"   # 每天 04:20 SGT（美股收盘后）
+    - cron: "20 7  * * *"   # 每天 15:20 SGT（A股收盘后）
+  workflow_dispatch:         # 允许手动运行
+
+permissions:
+  contents: write            # 允许提交变更
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install yfinance pandas pyyaml
+      - run: python fetch_market_data.py sample_config.yaml
+      - name: Commit CSV changes
+        run: |
+          git config user.name "auto-bot"
+          git config user.email "bot@example.com"
+          git add -A
+          git diff --cached --quiet && echo "No changes" || git commit -m "auto: update market_data $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          git push
