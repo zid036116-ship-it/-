@@ -2,7 +2,7 @@ name: fetch-market-data
 
 on:
   schedule:
-    # GitHub Actions 用 UTC 时区；这两条等价于 SGT 的 04:20 和 15:20
+    # GitHub Actions 使用 UTC；下两行等价于 SGT 的 04:20 和 15:20
     - cron: "20 20 * * *"   # 每天 04:20 SGT（美股收盘后）
     - cron: "20 7  * * *"   # 每天 15:20 SGT（A股收盘后）
   workflow_dispatch:         # 允许手动运行
@@ -17,12 +17,26 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - run: pip install yfinance pandas pyyaml
-      - run: python fetch_market_data.py sample_config.yaml
-      - name: Commit CSV changes
+
+      - name: Install deps
+        run: pip install yfinance pandas pyyaml
+
+      - name: Fetch market data
+        run: python fetch_market_data.py sample_config.yaml
+
+      # ⬇️ 新增：把 CSV 同步到 docs/ 目录，供 GitHub Pages 固定链接使用
+      - name: Copy CSVs to docs for Pages
+        run: |
+          mkdir -p docs/market_data
+          cp -r market_data/* docs/market_data/ || true
+          # 关闭 Jekyll 处理，避免下划线文件或特殊路径被忽略
+          touch docs/.nojekyll
+
+      - name: Commit CSV changes (incl. docs/)
         run: |
           git config user.name "auto-bot"
           git config user.email "bot@example.com"
